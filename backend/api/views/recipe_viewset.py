@@ -19,6 +19,9 @@ from api.filters import RecipeFilter
 from api.permissions import AuthorOrReadOnly
 from recipes.models import Recipe, IngredientList, ShoppingCart, Favorite
 
+RECIPE_DELETED_FROM_SHOP_CART = 'Рецепт успешно удален из списка покупок'
+RECIPE_DELETED_FROM_FAVOR = 'Рецепт успешно удален из избранного'
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
@@ -63,12 +66,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
             serializer = ShoppingCartSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        recipe_in_cart = ShoppingCart.objects.filter(
-            user=current_user,
-            recipe=recipe
-        )
-        recipe_in_cart.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        deleted = get_object_or_404(ShoppingCart,
+                                    user=request.user,
+                                    recipe=recipe)
+        deleted.delete()
+        return Response({'message': RECIPE_DELETED_FROM_SHOP_CART},
+                        status=status.HTTP_200_OK)
 
     @action(
         detail=True,
@@ -87,11 +90,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             Favorite.objects.create(user=current_user, recipe=recipe)
             serializer = FavoriteSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        recipe_in_favorite = Favorite.objects.filter(
-            user=current_user, recipe=recipe
-        )
-        recipe_in_favorite.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        deleted = get_object_or_404(Favorite,
+                                    user=request.user,
+                                    recipe=recipe)
+        deleted.delete()
+        return Response({'message': RECIPE_DELETED_FROM_FAVOR},
+                        status=status.HTTP_200_OK)
 
 
 def unloading_shopping_cart(ingredient_recipe):

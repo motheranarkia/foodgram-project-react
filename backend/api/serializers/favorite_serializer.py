@@ -10,6 +10,13 @@ ERR_RECIPE_ALREADY_IN_FAVOR = 'Этот рецепт уже есть в избр
 ERROR_RECIPE_NOT_IN_FAVOR = 'Этого рецепта нет в избранном пользователя!'
 
 
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = "__all__"
+
+
 class FavoriteListSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -33,10 +40,3 @@ class FavoriteListSerializer(serializers.ModelSerializer):
                 'errors': ERROR_RECIPE_NOT_IN_FAVOR
             })
         return data
-
-
-class FavoriteSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Recipe
-        fields = "__all__"

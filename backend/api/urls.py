@@ -10,10 +10,10 @@ app_name = 'api'
 
 router = DefaultRouter()
 
-router.register('users', UserViewSet, basename='users')
-router.register('tags', TagViewSet, basename='tags')
-router.register('ingredients', IngredientViewSet, basename='ingredients')
-router.register('recipes', RecipeViewSet, basename='recipes')
+router.register(r'users', UserViewSet, basename='users')
+router.register(r'tags', TagViewSet, basename='tags')
+router.register(r'ingredients', IngredientViewSet, basename='ingredients')
+router.register(r'recipes', RecipeViewSet, basename='recipes')
 
 urlpatterns = [
     path('', include(router.urls)),
