@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 
-from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+from .models import (Favorite, Ingredient, IngredientList, Recipe,
                      ShoppingCart, Tag)
 
 EMPTY_VALUE = '-пусто-'
@@ -19,7 +19,7 @@ class TagAdmin(admin.ModelAdmin):
 
 class IngredientRecipeInline(admin.TabularInline):
     """Представляет модель IngredientRecipe в интерфейсе администратора."""
-    model = IngredientRecipe
+    model = IngredientList
 
 
 @admin.register(Ingredient)

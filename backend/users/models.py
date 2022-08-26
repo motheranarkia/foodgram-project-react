@@ -1,32 +1,36 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+MAX_LEN_FIELD = 150
+USER_HELP = ('Обязательно для заполнения. '
+             f'Максимум {MAX_LEN_FIELD} букв.')
+
 
 class User(AbstractUser):
     """Модель пользователя."""
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
-    email = models.EmailField(
-        'Адрес электронной почты',
-        max_length=254,
-        unique=True
-    )
-    username = models.CharField(
-        'Уникальный юзернейм',
-        max_length=150,
-        unique=True
-    )
-    first_name = models.CharField(
-        'Имя',
-        max_length=150
-    )
-    last_name = models.CharField(
-        'Фамилия',
-        max_length=150
-    )
+    username = models.CharField('Уникальный юзернейм',
+                                max_length=MAX_LEN_FIELD,
+                                blank=False,
+                                unique=True,
+                                help_text=USER_HELP)
+    password = models.CharField('Пароль',
+                                max_length=MAX_LEN_FIELD,
+                                blank=False,
+                                help_text=USER_HELP)
+    email = models.CharField(max_length=254,
+                             blank=False,
+                             verbose_name='Адрес электронной почты',
+                             help_text='Обязательно для заполнения')
+    first_name = models.CharField('Имя',
+                                  max_length=MAX_LEN_FIELD,
+                                  blank=False,
+                                  help_text=USER_HELP)
+    last_name = models.CharField('Фамилия',
+                                 max_length=MAX_LEN_FIELD,
+                                 blank=False,
+                                 help_text=USER_HELP)
 
     class Meta:
-        ordering = ('id',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
@@ -34,7 +38,7 @@ class User(AbstractUser):
         return self.username
 
 
-class Subscribe(models.Model):
+class Follow(models.Model):
     """Модель подписки."""
     user = models.ForeignKey(
         User,
@@ -50,6 +54,7 @@ class Subscribe(models.Model):
     )
 
     class Meta:
+        ordering = ['-id']
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
         constraints = (
@@ -57,3 +62,6 @@ class Subscribe(models.Model):
                 fields=('user', 'author', ),
                 name='unique_subscribe'),
         )
+
+        def __str__(self):
+            return f'{self.user} подписался на {self.author}'
