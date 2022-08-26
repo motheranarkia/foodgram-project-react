@@ -9,14 +9,14 @@ from django.db.models import Sum
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 
-from serializers.recipe_serializers import RecipeListSerializer, \
+from api.serializers.recipe_serializers import RecipeListSerializer, \
     RecipeCreateSerializer
-from serializers.shoppingcart_serializers import ShoppingCartSerializer, \
+from api.serializers.shoppingcart_serializers import ShoppingCartSerializer, \
     ShoppingCartValidateSerializer
-from serializers.favorite_serializer import FavoriteSerializer, \
-    FavoriteValidateSerializer
+from api.serializers.favorite_serializer import FavoriteSerializer, \
+    FavoriteListSerializer
 from api.filters import RecipeFilter
-from api.permissions import IsAuthorAdminOrReadOnly
+from api.permissions import AuthorOrReadOnly
 from recipes.models import Recipe, IngredientList, ShoppingCart, Favorite
 
 
@@ -24,7 +24,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeListSerializer
     filter_backends = [DjangoFilterBackend]
-    permission_classes = (IsAuthorAdminOrReadOnly,)
+    permission_classes = (AuthorOrReadOnly,)
     filterset_class = RecipeFilter
     http_method_names = ['get', 'post', 'patch', 'delete']
 
@@ -78,7 +78,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk):
         current_user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
-        serializer = FavoriteValidateSerializer(
+        serializer = FavoriteListSerializer(
             data=request.data,
             context={'request': request, 'recipe': recipe},
         )

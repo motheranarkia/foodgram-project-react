@@ -2,19 +2,20 @@ from rest_framework import serializers
 
 from recipes.models import Favorite, Recipe
 
+REQUIRED_FIELDS_FAVOR = (
+    'user',
+    'recipe',
+)
+ERR_RECIPE_ALREADY_IN_FAVOR = 'Этот рецепт уже есть в избранном!'
+ERROR_RECIPE_NOT_IN_FAVOR = 'Этого рецепта нет в избранном пользователя!'
 
-class FavoriteValidateSerializer(serializers.ModelSerializer):
+
+class FavoriteListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Favorite
-        fields = (
-            'user',
-            'recipe',
-        )
-        read_only_fields = (
-            'user',
-            'recipe',
-        )
+        fields = REQUIRED_FIELDS_FAVOR
+        read_only_fields = REQUIRED_FIELDS_FAVOR
 
     def validate(self, data):
         request = self.context.get('request')
@@ -25,11 +26,11 @@ class FavoriteValidateSerializer(serializers.ModelSerializer):
         if request.method == 'POST':
             if recipe_in_favorite.exists():
                 raise serializers.ValidationError({
-                    'errors': 'Этот рецепт уже есть в избранном!'
+                    'errors': ERR_RECIPE_ALREADY_IN_FAVOR
                 })
         if request.method == 'DELETE' and not recipe_in_favorite.exists():
             raise serializers.ValidationError({
-                'errors': 'Этого рецепта нет в избранном пользователя!'
+                'errors': ERROR_RECIPE_NOT_IN_FAVOR
             })
         return data
 
@@ -38,4 +39,4 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time',)
+        fields = "__all__"

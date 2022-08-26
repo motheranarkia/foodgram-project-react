@@ -23,7 +23,7 @@ class CreateUserSerializer(UserCreateSerializer):
 
 
 # 5
-class UsersSerializer(UserSerializer):
+class UserSerializer(UserSerializer):
     """Сериализатор пользователей."""
     is_subscribed = SerializerMethodField()
 

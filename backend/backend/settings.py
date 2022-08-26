@@ -139,9 +139,9 @@ AUTH_USER_MODEL = 'users.User'
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
-    'SERIALIZERS': {'user': ('api.serializers.UsersSerializer'),
+    'SERIALIZERS': {'user': ('api.serializers.user_serializers.UserSerializer'),
                     'user_create': ('api.serializers.CreateUserSerializer'),
-                    'current_user': ('api.serializers.UsersSerializer')
+                    'current_user': ('api.serializers.UserSerializer')
                     },
     'PERMISSIONS': {'user': ('rest_framework.permissions.IsAuthenticated'),
                     'user_delete': ('rest_framework.permissions.IsAdminUser'),

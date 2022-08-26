@@ -2,6 +2,12 @@ from rest_framework import serializers
 
 from recipes.models import Ingredient, IngredientList
 
+REQUIRED_FIELDS_INGRD = (
+    "id",
+    "name",
+    "measurement_unit",
+)
+
 
 class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор ингредиента."""
@@ -12,11 +18,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = (
-            "id",
-            "name",
-            "measurement_unit",
-        )
+        fields = REQUIRED_FIELDS_INGRD
 
 
 class IngredientRecipeListSerializer(serializers.ModelSerializer):
@@ -30,12 +32,7 @@ class IngredientRecipeListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IngredientList
-        fields = (
-            "id",
-            "name",
-            "measurement_unit",
-            "amount",
-        )
+        fields = REQUIRED_FIELDS_INGRD + ('amount')
 
 
 class IngredientRecipeCreateSerializer(serializers.ModelSerializer):

@@ -2,17 +2,24 @@ from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
-from user_serializers import UsersSerializer
+from .user_serializers import UserSerializer
 
 from recipes.models import Favorite, Ingredient, IngredientList, Recipe, Tag
 from .ingredient_serializers import IngredientRecipeListSerializer, \
     IngredientRecipeCreateSerializer
 from .tag_serializer import TagSerializer
 
+REQUIRED_FIELDS_PECIPE = (
+    'ingredients', 'tags', 'image',
+    'name', 'text', 'cooking_time', 'author'
+)
+ERROR_MISSING_INGREDIENT = 'Пожалуйста, выберите хотя бы один ингредиент'
+ERROR_NOT_POSITIVE_VALUE = 'Пожалуйста, введите хоть что-нибудь'
+
 
 class RecipeListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
-    author = UsersSerializer()
+    author = UserSerializer()
     ingredients = IngredientRecipeListSerializer(
         many=True,
         source='ingredient_recipe'
@@ -22,9 +29,9 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited',
-                  'is_in_shopping_cart', 'name', 'image', 'text',
-                  'cooking_time')
+        fields = REQUIRED_FIELDS_PECIPE + (
+            'id', 'is_favorited', 'is_in_shopping_cart'
+        )
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
@@ -46,7 +53,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    author = UsersSerializer(default=serializers.CurrentUserDefault())
+    author = UserSerializer(default=serializers.CurrentUserDefault())
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
@@ -56,16 +63,15 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('ingredients', 'tags', 'image',
-                  'name', 'text', 'cooking_time', 'author')
+        fields = REQUIRED_FIELDS_PECIPE
 
     def validate_ingredients(self, data):
         ingredients = self.initial_data.get('ingredients')
         if ingredients == []:
-            raise ValidationError('Нужно выбрать минимум 1 ингридиент!')
+            raise ValidationError(ERROR_MISSING_INGREDIENT)
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
-                raise ValidationError('Количество должно быть положительным!')
+                raise ValidationError(ERROR_NOT_POSITIVE_VALUE)
         return data
 
     def get_ingredients(self, obj):

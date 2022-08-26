@@ -2,25 +2,27 @@ from rest_framework import serializers
 
 from recipes.models import Recipe, ShoppingCart
 
+ERROR_RECIPE_ALREADY_IN_LIST = 'Этот рецепт уже добавлен в список покупок'
+ERROR_RECIPE_NOT_IN_LIST = 'Этого рецепта нет в списке покупок'
+
+REQUIRED_FIELDS_SHOP_CART = (
+    'user',
+    'recipe',
+)
+
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time', )
+        fields = "__all__"
 
 
 class ShoppingCartValidateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShoppingCart
-        fields = (
-            'user',
-            'recipe',
-        )
-        read_only_fields = (
-            'user',
-            'recipe',
-        )
+        fields = REQUIRED_FIELDS_SHOP_CART
+        read_only_fields = REQUIRED_FIELDS_SHOP_CART
 
     def validate(self, data):
         request = self.context.get('request')
@@ -31,10 +33,10 @@ class ShoppingCartValidateSerializer(serializers.ModelSerializer):
         if request.method == 'POST':
             if recipe_in_cart.exists():
                 raise serializers.ValidationError({
-                    'errors': 'Этот рецепт уже добавлен в корзину покупок!'
+                    'errors': ERROR_RECIPE_ALREADY_IN_LIST
                 })
         if request.method == 'DELETE' and not recipe_in_cart.exists():
             raise serializers.ValidationError({
-                'errors': 'Этого рецепта нет в корзине покупок пользователя!'
+                'errors': ERROR_RECIPE_NOT_IN_LIST
             })
         return data

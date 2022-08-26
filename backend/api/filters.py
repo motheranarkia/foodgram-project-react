@@ -2,6 +2,10 @@ from django_filters import rest_framework as filters
 
 from recipes.models import Recipe, Tag
 
+REQUIRED_FIELDS_RECIPE_FILTER = (
+    'tags', 'author', 'is_favorited', 'is_in_shopping_cart'
+)
+
 
 class RecipeFilter(filters.FilterSet):
     """Фильтр для сортировки рецептов."""
@@ -24,7 +28,7 @@ class RecipeFilter(filters.FilterSet):
             )
         return queryset
 
-    def filter_is_in_shopping_cart(self, queryset, name, value):
+    def filter_is_in_shopping_cart(self, queryset, value):
         if value:
             return queryset.filter(
                 shopping_cart__user=self.request.user
@@ -33,4 +37,4 @@ class RecipeFilter(filters.FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart',)
+        fields = REQUIRED_FIELDS_RECIPE_FILTER
