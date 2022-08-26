@@ -42,9 +42,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         ingredient_list = IngredientList.objects.filter(
-            recipe__shopping_cart__user=request.user
+            recipe__shopping_cart__user=request.user).values(
+                'ingredients__name',
+                'ingredients__measurement_unit').annotate(
+                    amount=Sum('amount'))
+        ingredient_list.values_list(
+            'ingredients__name', 'ingredients__measurement_unit', 'amount'
         )
-        return unloading_shopping_cart(ingredient_list)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = ('attachment;'
+                                           'filename="Shoppingcart.csv"')
+        response.write(u'\ufeff'.encode('utf8'))
+        writer = csv.writer(response)
+        for item in list(ingredient_list):
+            writer.writerow(item)
+        return response
 
     @action(
         detail=True,
@@ -96,20 +108,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         deleted.delete()
         return Response({'message': RECIPE_DELETED_FROM_FAVOR},
                         status=status.HTTP_200_OK)
-
-
-def unloading_shopping_cart(ingredient_recipe):
-    ingredients = ingredient_recipe.values(
-        'ingredient__name', 'ingredient__measurement_unit'
-    ).annotate(ingredient_amount=Sum('amount')).values_list(
-        'ingredient__name', 'ingredient_amount',
-        'ingredient__measurement_unit',
-    )
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = ('attachment;'
-                                       'filename="Shoppingcart.csv"')
-    response.write(u'\ufeff'.encode('utf8'))
-    writer = csv.writer(response)
-    for item in list(ingredients):
-        writer.writerow(item)
-    return response
