@@ -41,13 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'djoser',
     'api.apps.ApiConfig',
     'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'djoser',
-    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -139,11 +139,13 @@ AUTH_USER_MODEL = 'users.User'
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
-    'SERIALIZERS': {'user': ('api.serializers.user_serializers.UserSerializer'),
-                    'user_create': ('api.serializers.CreateUserSerializer'),
-                    'current_user': ('api.serializers.UserSerializer')
-                    },
-    'PERMISSIONS': {'user': ('rest_framework.permissions.IsAuthenticated'),
-                    'user_delete': ('rest_framework.permissions.IsAdminUser'),
-                    },
+    'SERIALIZERS': {
+        'user': ('api.serializers.user_serializers.UserSerializer'),
+        'user_create': ('api.serializers.CreateUserSerializer'),
+        'current_user': ('api.serializers.UserSerializer')
+    },
+    'PERMISSIONS': {
+        'user': ('rest_framework.permissions.IsAuthenticated'),
+        'user_delete': ('rest_framework.permissions.IsAdminUser'),
+    },
 }

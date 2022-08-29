@@ -121,10 +121,11 @@ class Favorite(models.Model):
         related_name='favorite_recipe'
     )
     recipe = models.ForeignKey(
-        Recipe, verbose_name='Рецепт'
+        Recipe, verbose_name='Рецепт' 
         on_delete=models.CASCADE,
         related_name='favorite_recipe'
     )
+
 
     class Meta:
         verbose_name = 'Избранное'
