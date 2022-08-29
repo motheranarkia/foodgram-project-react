@@ -7,15 +7,15 @@ User = get_user_model()
 
 class Tag(models.Model):
     """Модель тегов рецептов пользователей."""
-    name = models.CharField('Тtг',
-                            max_length=200,
-                            unique=True)
-    color = models.CharField('Цвет',
-                             max_length=7,
-                             unique=True)
-    slug = models.SlugField('Ссылка',
-                            max_length=200,
-                            unique=True)
+    name = models.CharField(
+        'Тег', max_length=200, unique=True
+    )
+    color = models.CharField(
+        'Цвет', max_length=7, unique=True
+    )
+    slug = models.SlugField(
+        'Ссылка', max_length=200, unique=True
+    )
 
     class Meta:
         ordering = ('name', )
@@ -28,10 +28,12 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     """Модель ингредиентов."""
-    name = models.CharField('Ингредиент',
-                            max_length=200)
-    measurement_unit = models.CharField('Единица измерения',
-                                        max_length=200)
+    name = models.CharField(
+        'Ингредиент', max_length=200
+    )
+    measurement_unit = models.CharField(
+        'Единица измерения', max_length=200
+    )
 
     class Meta:
         ordering = ('name', )
@@ -113,14 +115,16 @@ class IngredientList(models.Model):
 
 class Favorite(models.Model):
     """Модель списка избранного."""
-    user = models.ForeignKey(User,
-                             verbose_name='Пользователь',
-                             on_delete=models.CASCADE,
-                             related_name='favorite_recipe')
-    recipe = models.ForeignKey(Recipe,
-                               verbose_name='Рецепт',
-                               on_delete=models.CASCADE,
-                               related_name='favorite_recipe')
+    user = models.ForeignKey(
+        User, verbose_name='Пользователь',
+        on_delete=models.CASCADE,
+        related_name='favorite_recipe'
+    )
+    recipe = models.ForeignKey(
+        Recipe, verbose_name='Рецепт'
+        on_delete=models.CASCADE,
+        related_name='favorite_recipe'
+    )
 
     class Meta:
         verbose_name = 'Избранное'
@@ -129,15 +133,18 @@ class Favorite(models.Model):
 
 class ShoppingCart(models.Model):
     """Модель списка покупок пользователя."""
-    user = models.ForeignKey(User,
-                             verbose_name='Пользователь',
-                             on_delete=models.CASCADE,
-                             related_name='shopping_cart')
-    recipe = models.ForeignKey(Recipe,
-                               verbose_name='Рецепт',
-                               on_delete=models.CASCADE,
-                               related_name='shopping_cart')
-
+    user = models.ForeignKey(
+        User, verbose_name='Пользователь',
+        on_delete=models.CASCADE,
+        related_name='shopping_cart'
+    )
+    recipe = models.ForeignKey(
+        Recipe, 
+        verbose_name='Рецепт',
+        on_delete=models.CASCADE,
+        related_name='shopping_cart'
+    )
+    
     class Meta:
         verbose_name = 'Покупка'
         verbose_name_plural = 'Покупки'

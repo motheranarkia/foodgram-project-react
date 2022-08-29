@@ -8,8 +8,10 @@ EMPTY_VALUE = '-пусто-'
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     """Представляет модель User в интерфейсе администратора."""
-    list_display = ('id', 'username', 'first_name',
-                    'last_name', 'email', 'password')
+    list_display = (
+        'id', 'username', 'first_name',
+        'last_name', 'email', 'password'
+    )
     list_filter = ('email', 'username', )
     empty_value_display = EMPTY_VALUE
 

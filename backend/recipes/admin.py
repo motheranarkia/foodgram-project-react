@@ -1,9 +1,8 @@
-
-
 from django.contrib import admin
 
-from .models import (Favorite, Ingredient, IngredientList, Recipe,
-                     ShoppingCart, Tag)
+from .models import (
+    Favorite, Ingredient, IngredientList, Recipe, ShoppingCart, Tag
+)
 
 EMPTY_VALUE = '-пусто-'
 
