@@ -79,7 +79,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = IngredientList.objects.filter(recipe=obj)
         return IngredientRecipeListSerializer(ingredients).data
 
-    def add_recipe_ingredients(self, ingredients, recipe):
+    def _add_recipe_ingredients(self, ingredients, recipe):
         IngredientList.objects.bulk_create(
             [IngredientList(
                 IngredientRecipe=ingredient['ingredient'],
