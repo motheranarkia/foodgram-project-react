@@ -4,15 +4,14 @@ from rest_framework.serializers import SerializerMethodField
 from users.models import Follow, User
 
 REQUIRED_FIELDS_USER = (
-    "id",
-    "email",
-    "username",
-    "first_name",
-    "last_name",
+    'id',
+    'email',
+    'username',
+    'first_name',
+    'last_name',
 )
 
 
-# 5
 class CreateUserSerializer(UserCreateSerializer):
     """Сериализатор для регистрации пользователей."""
 
@@ -22,7 +21,6 @@ class CreateUserSerializer(UserCreateSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
-# 5
 class UserSerializer(UserSerializer):
     """Сериализатор пользователей."""
     is_subscribed = SerializerMethodField()

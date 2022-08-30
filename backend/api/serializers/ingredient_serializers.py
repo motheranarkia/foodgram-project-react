@@ -3,9 +3,9 @@ from rest_framework import serializers
 from recipes.models import Ingredient, IngredientList
 
 REQUIRED_FIELDS_INGRD = (
-    "id",
-    "name",
-    "measurement_unit",
+    'id',
+    'name',
+    'measurement_unit',
 )
 
 
@@ -24,10 +24,10 @@ class IngredientSerializer(serializers.ModelSerializer):
 class IngredientRecipeListSerializer(serializers.ModelSerializer):
     """Сериализатор ингредиента для RecipeListSerializer."""
 
-    id = serializers.IntegerField(source="ingredient.id")
-    name = serializers.CharField(source="ingredient.name")
+    id = serializers.IntegerField(source='ingredient.id')
+    name = serializers.CharField(source='ingredient.name')
     measurement_unit = serializers.CharField(
-        source="ingredient.measurement_unit"
+        source='ingredient.measurement_unit'
     )
 
     class Meta:

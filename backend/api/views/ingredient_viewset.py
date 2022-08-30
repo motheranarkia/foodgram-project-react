@@ -14,5 +14,3 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
     filter_backends = [DjangoFilterBackend]
     search_fields = ('^name',)
-
-# 4

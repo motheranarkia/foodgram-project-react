@@ -2,10 +2,6 @@ from django_filters import rest_framework as filters
 
 from recipes.models import Recipe, Tag
 
-REQUIRED_FIELDS_RECIPE_FILTER = (
-    'tags', 'author', 'is_favorited', 'is_in_shopping_cart'
-)
-
 
 class RecipeFilter(filters.FilterSet):
     """Фильтр для сортировки рецептов."""
@@ -37,4 +33,6 @@ class RecipeFilter(filters.FilterSet):
 
     class Meta:
         model = Recipe
-        fields = REQUIRED_FIELDS_RECIPE_FILTER
+        fields = (
+            'tags', 'author', 'is_favorited', 'is_in_shopping_cart'
+        )

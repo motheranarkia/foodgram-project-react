@@ -9,12 +9,15 @@ from django.db.models import Sum
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 
-from api.serializers.recipe_serializers import RecipeListSerializer, \
-    RecipeCreateSerializer
-from api.serializers.shoppingcart_serializers import ShoppingCartSerializer, \
-    ShoppingCartValidateSerializer
-from api.serializers.favorite_serializer import FavoriteSerializer, \
-    FavoriteListSerializer
+from api.serializers.recipe_serializers import (
+    RecipeListSerializer, RecipeCreateSerializer
+)
+from api.serializers.shoppingcart_serializers import (
+    ShoppingCartSerializer, ShoppingCartValidateSerializer
+)
+from api.serializers.favorite_serializer import (
+    FavoriteSerializer, FavoriteListSerializer
+)
 from api.filters import RecipeFilter
 from api.permissions import AuthorOrReadOnly
 from recipes.models import Recipe, IngredientList, ShoppingCart, Favorite
@@ -42,21 +45,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         ingredient_list = IngredientList.objects.filter(
-            recipe__shopping_cart__user=request.user).values(
-                'ingredients__name',
-                'ingredients__measurement_unit').annotate(
-                    amount=Sum('amount'))
-        ingredient_list.values_list(
-            'ingredients__name', 'ingredients__measurement_unit', 'amount'
-        )
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = ('attachment;'
-                                           'filename="Shoppingcart.csv"')
-        response.write(u'\ufeff'.encode('utf8'))
-        writer = csv.writer(response)
-        for item in list(ingredient_list):
-            writer.writerow(item)
-        return response
+            recipe__shopping_cart__user=request.user
+            )
+        return list_formation(ingredient_list)
 
     @action(
         detail=True,
@@ -108,3 +99,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
         deleted.delete()
         return Response({'message': RECIPE_DELETED_FROM_FAVOR},
                         status=status.HTTP_200_OK)
+
+
+def list_formation(ingredient_list):
+    ingredients = ingredient_list.values(
+        'ingredient__name',
+        'ingredient__measurement_unit'
+    ).annotate(
+        ingredient_amount=Sum('amount')
+        ).values_list(
+        'ingredient__name',
+        'ingredient_amount',
+        'ingredient__measurement_unit',
+    )
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = (
+        'attachment;'
+        'filename="Shoppingcart.csv"'
+    )
+    response.write(u'\ufeff'.encode('utf8'))
+    writer = csv.writer(response)
+    for item in list(ingredients):
+        writer.writerow(item)
+    return response

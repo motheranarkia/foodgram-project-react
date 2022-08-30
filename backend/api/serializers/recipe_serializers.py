@@ -1,11 +1,13 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
-from .user_serializers import UserSerializer
 
 from recipes.models import Favorite, IngredientList, Recipe, Tag
-from .ingredient_serializers import IngredientRecipeListSerializer, \
+from .user_serializers import UserSerializer
+from .ingredient_serializers import (
+    IngredientRecipeListSerializer,
     IngredientRecipeCreateSerializer
+)
 from .tag_serializer import TagSerializer
 
 REQUIRED_FIELDS_PECIPE = (
@@ -90,9 +92,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
         image = validated_data.pop('image')
-        recipe = Recipe.objects.create(image=image,
-                                       **validated_data)
-        self.create_ingredients(ingredients_data, recipe)
+        recipe = Recipe.objects.create(
+            image=image,
+            **validated_data
+        )
+        self._add_recipe_ingredients(ingredients_data, recipe)
         recipe.tags.set(tags_data)
         return recipe
 

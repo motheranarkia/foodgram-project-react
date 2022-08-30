@@ -1,7 +1,5 @@
 from django.shortcuts import get_object_or_404
-
 from djoser.views import UserViewSet
-
 from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -13,7 +11,7 @@ from users.models import User, Follow
 
 
 ERROR_SUBSCRIPTION_ALREADY_EXISTS = 'Вы уже подписаны на этого автора.'
-ERROR_SUBSCRIBING_NOT_EXIST = "Вы не подписаны на этого автора."
+ERROR_SUBSCRIBING_NOT_EXIST = 'Вы не подписаны на этого автора.'
 
 
 class UserViewSet(UserViewSet):
@@ -21,9 +19,11 @@ class UserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    @action(detail=False,
-            methods=['get'],
-            permission_classes=(IsAuthenticated, ))
+    @action(
+        detail=False,
+        methods=['get'],
+        permission_classes=(IsAuthenticated, )
+    )
     def subscriptions(self, request):
         user = request.user
         queryset = User.objects.filter(follower__user=user)
@@ -56,9 +56,11 @@ class UserViewSet(UserViewSet):
                 author,
                 context={'request': request}
             )
-            return Response(serializer.data,
-                            status=status.HTTP_201_CREATED)
-        elif request.method == 'DELETE':
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+        if request.method == 'DELETE':
             if not subscribe.exists():
                 data = {'errors': ERROR_SUBSCRIBING_NOT_EXIST}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
