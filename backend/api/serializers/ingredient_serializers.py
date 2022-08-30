@@ -32,7 +32,7 @@ class IngredientRecipeListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IngredientList
-        fields = REQUIRED_FIELDS_INGRD + ('amount')
+        fields = REQUIRED_FIELDS_INGRD + ('amount',)
 
 
 class IngredientRecipeCreateSerializer(serializers.ModelSerializer):

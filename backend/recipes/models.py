@@ -121,11 +121,10 @@ class Favorite(models.Model):
         related_name='favorite_recipe'
     )
     recipe = models.ForeignKey(
-        Recipe, verbose_name='Рецепт' 
+        Recipe, verbose_name='Рецепт',
         on_delete=models.CASCADE,
         related_name='favorite_recipe'
     )
-
 
     class Meta:
         verbose_name = 'Избранное'
@@ -135,17 +134,18 @@ class Favorite(models.Model):
 class ShoppingCart(models.Model):
     """Модель списка покупок пользователя."""
     user = models.ForeignKey(
-        User, verbose_name='Пользователь',
+        User,
+        verbose_name='Пользователь',
         on_delete=models.CASCADE,
         related_name='shopping_cart'
     )
     recipe = models.ForeignKey(
-        Recipe, 
+        Recipe,
         verbose_name='Рецепт',
         on_delete=models.CASCADE,
         related_name='shopping_cart'
     )
-    
+
     class Meta:
         verbose_name = 'Покупка'
         verbose_name_plural = 'Покупки'
