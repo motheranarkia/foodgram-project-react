@@ -3,12 +3,11 @@ from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
 from recipes.models import Favorite, IngredientList, Recipe, Tag
-from .user_serializers import UserSerializer
-from .ingredient_serializers import (
-    IngredientRecipeListSerializer,
-    IngredientRecipeCreateSerializer
-)
+
+from .ingredient_serializers import (IngredientRecipeCreateSerializer,
+                                     IngredientRecipeListSerializer)
 from .tag_serializer import TagSerializer
+from .user_serializers import UserSerializer
 
 REQUIRED_FIELDS_PECIPE = (
     'ingredients', 'tags', 'image',

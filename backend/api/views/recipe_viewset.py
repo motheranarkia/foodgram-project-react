@@ -1,26 +1,23 @@
 import csv
 
+from django.db.models import Sum
+from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.http.response import HttpResponse
-from django.db.models import Sum
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
 
-from api.serializers.recipe_serializers import (
-    RecipeListSerializer, RecipeCreateSerializer
-)
-from api.serializers.shoppingcart_serializers import (
-    ShoppingCartSerializer, ShoppingCartValidateSerializer
-)
-from api.serializers.favorite_serializer import (
-    FavoriteSerializer, FavoriteListSerializer
-)
 from api.filters import RecipeFilter
 from api.permissions import AuthorOrReadOnly
-from recipes.models import Recipe, IngredientList, ShoppingCart, Favorite
+from api.serializers.favorite_serializer import (FavoriteListSerializer,
+                                                 FavoriteSerializer)
+from api.serializers.recipe_serializers import (RecipeCreateSerializer,
+                                                RecipeListSerializer)
+from api.serializers.shoppingcart_serializers import (
+    ShoppingCartSerializer, ShoppingCartValidateSerializer)
+from recipes.models import Favorite, IngredientList, Recipe, ShoppingCart
 
 RECIPE_DELETED_FROM_SHOP_CART = 'Рецепт успешно удален из списка покупок'
 RECIPE_DELETED_FROM_FAVOR = 'Рецепт успешно удален из избранного'

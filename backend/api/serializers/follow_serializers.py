@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from recipes.models import Recipe
-from users.models import User, Follow
+from users.models import Follow, User
 
 REQUIRED_FIELDS_FOLLOW = (
     'email', 'username', 'first_name', 'last_name',

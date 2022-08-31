@@ -1,14 +1,13 @@
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from rest_framework.decorators import action
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.serializers.user_serializers import UserSerializer
 from api.serializers.follow_serializers import FollowListSerializer
-from users.models import User, Follow
-
+from api.serializers.user_serializers import UserSerializer
+from users.models import Follow, User
 
 ERROR_SUBSCRIPTION_ALREADY_EXISTS = 'Вы уже подписаны на этого автора.'
 ERROR_SUBSCRIBING_NOT_EXIST = 'Вы не подписаны на этого автора.'
