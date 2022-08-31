@@ -11,10 +11,14 @@ from rest_framework.response import Response
 
 from api.filters import RecipeFilter
 from api.permissions import AuthorOrReadOnly
-from api.serializers.favorite_serializer import (FavoriteListSerializer,
-                                                 FavoriteSerializer)
-from api.serializers.recipe_serializers import (RecipeCreateSerializer,
-                                                RecipeListSerializer)
+from api.serializers.favorite_serializer import (
+    FavoriteListSerializer,
+    FavoriteSerializer
+)
+from api.serializers.recipe_serializers import (
+    RecipeCreateSerializer,
+    RecipeListSerializer
+)
 from api.serializers.shoppingcart_serializers import (
     ShoppingCartSerializer, ShoppingCartValidateSerializer)
 from recipes.models import Favorite, IngredientList, Recipe, ShoppingCart
@@ -66,12 +70,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
             serializer = ShoppingCartSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        deleted = get_object_or_404(ShoppingCart,
-                                    user=request.user,
-                                    recipe=recipe)
+        deleted = get_object_or_404(
+            ShoppingCart,
+            user=request.user,
+            recipe=recipe
+        )
         deleted.delete()
-        return Response({'message': RECIPE_DELETED_FROM_SHOP_CART},
-                        status=status.HTTP_200_OK)
+        return Response(
+            {'message': RECIPE_DELETED_FROM_SHOP_CART},
+            status=status.HTTP_200_OK
+        )
 
     @action(
         detail=True,

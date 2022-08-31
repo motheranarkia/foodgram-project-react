@@ -4,8 +4,10 @@ from rest_framework.serializers import ValidationError
 
 from recipes.models import Favorite, IngredientList, Recipe, Tag
 
-from .ingredient_serializers import (IngredientRecipeCreateSerializer,
-                                     IngredientRecipeListSerializer)
+from .ingredient_serializers import (
+    IngredientRecipeCreateSerializer,
+    IngredientRecipeListSerializer
+)
 from .tag_serializer import TagSerializer
 from .user_serializers import UserSerializer
 
