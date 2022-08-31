@@ -3,8 +3,8 @@ from django.db import models
 
 MAX_LEN_FIELD = 150
 USER_HELP = (
-   'Обязательно для заполнения. '
-   f'Максимум {MAX_LEN_FIELD} букв.'
+    'Обязательно для заполнения. '
+    f'Максимум {MAX_LEN_FIELD} букв.'
 )
 
 

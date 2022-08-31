@@ -47,7 +47,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         ingredient_list = IngredientList.objects.filter(
             recipe__shopping_cart__user=request.user
-            )
+        )
         return list_formation(ingredient_list)
 
     @action(
@@ -112,7 +112,7 @@ def list_formation(ingredient_list):
         'ingredient__measurement_unit'
     ).annotate(
         ingredient_amount=Sum('amount')
-        ).values_list(
+    ).values_list(
         'ingredient__name',
         'ingredient_amount',
         'ingredient__measurement_unit',
