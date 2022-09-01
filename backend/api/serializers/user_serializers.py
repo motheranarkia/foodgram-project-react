@@ -12,13 +12,12 @@ REQUIRED_FIELDS_USER = (
 )
 
 
-class CreateUserSerializer(UserCreateSerializer):
+class UserCreateSerializer(UserCreateSerializer):
     """Сериализатор для регистрации пользователей."""
 
-    class Meta(UserCreateSerializer.Meta):
+    class Meta:
         model = User
-        fields = REQUIRED_FIELDS_USER
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = REQUIRED_FIELDS_USER + ('password',)
 
 
 class UserSerializer(UserSerializer):

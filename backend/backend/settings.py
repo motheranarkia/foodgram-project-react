@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '4+&e(wuq$%w75d!w%&k-ys@=4exqzh0#brqjdbe0a9$art1yog'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -86,10 +86,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv(
-            'DB_ENGINE',
-            default='django.db.backends.postgresql'
-        ),
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
         'NAME': os.getenv('DB_NAME', default='postgres'),
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
@@ -98,6 +95,12 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -152,11 +155,11 @@ DJOSER = {
     'HIDE_USERS': False,
     'SERIALIZERS': {
         'user': ('api.serializers.user_serializers.UserSerializer'),
-        'user_create': ('api.serializers.CreateUserSerializer'),
-        'current_user': ('api.serializers.UserSerializer')
+        'user_create': ('api.serializers.user_serializers.UserCreateSerializer'),
+        'current_user': ('api.serializers.user_serializers.UserSerializer')
     },
     'PERMISSIONS': {
-        'user': ('rest_framework.permissions.IsAuthenticated'),
+        'user': ('rest_framework.permissions.AllowAny'),
         'user_delete': ('rest_framework.permissions.IsAdminUser'),
     },
 }
@@ -166,3 +169,5 @@ REST_FRAMEWORK = {
         'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 6,
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

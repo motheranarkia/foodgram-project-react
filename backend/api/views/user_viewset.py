@@ -35,7 +35,7 @@ class UserViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(
-        methods=['get', 'delete'],
+        methods=['POST', 'DELETE'],
         detail=True,
         permission_classes=(IsAuthenticated, )
     )
@@ -43,9 +43,7 @@ class UserViewSet(UserViewSet):
         user = self.request.user
         author = get_object_or_404(User, id=id)
         subscribe = Follow.objects.filter(user=user, author=author)
-        if user.is_anonymous:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        if request.method == 'GET':
+        if request.method == 'POST':
             if subscribe.exists():
                 data = {
                     'errors': ERROR_SUBSCRIPTION_ALREADY_EXISTS}
