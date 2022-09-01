@@ -26,7 +26,7 @@ class UserSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = REQUIRED_FIELDS_USER
+        fields = REQUIRED_FIELDS_USER + ('is_subscribed',)
 
     def get_is_subscribed(self, obj):
         user = self.context['request'].user
