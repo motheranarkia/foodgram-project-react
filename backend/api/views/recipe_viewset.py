@@ -32,7 +32,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeListSerializer
     filter_backends = [DjangoFilterBackend]
     permission_classes = (AuthorOrReadOnly,)
-    filterset_class = RecipeFilter
+    filter_class = RecipeFilter
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_serializer_class(self):
