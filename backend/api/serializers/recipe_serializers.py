@@ -12,7 +12,7 @@ from .tag_serializer import TagSerializer
 from .user_serializers import UserSerializer
 
 REQUIRED_FIELDS_PECIPE = (
-    'ingredients', 'tags', 'image',
+    'ingredients', 'tags',
     'name', 'text', 'cooking_time', 'author'
 )
 ERROR_MISSING_INGREDIENT = 'Пожалуйста, выберите хотя бы один ингредиент'
