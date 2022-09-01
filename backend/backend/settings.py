@@ -159,8 +159,8 @@ DJOSER = {
         'current_user': ('api.serializers.user_serializers.UserSerializer')
     },
     'PERMISSIONS': {
-        'user': ('rest_framework.permissions.AllowAny'),
-        'user_delete': ('rest_framework.permissions.IsAdminUser'),
+        'user': ('rest_framework.permissions.AllowAny',),
+        'user_delete': ('rest_framework.permissions.IsAdminUser',),
     },
 }
 
