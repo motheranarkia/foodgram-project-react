@@ -81,26 +81,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             ingredients_list.append(ingredient_id)
         return data
 
-#        if ingredients == []:
-#            raise ValidationError(ERROR_MISSING_INGREDIENT)
-#        for ingredient in ingredients:
-#            if int(ingredient['amount']) <= 0:
-#                raise ValidationError(ERROR_NOT_POSITIVE_VALUE)
-#        return data
-
-#    def get_ingredients(self, obj):
-#        ingredients = IngredientList.objects.filter(recipe=obj)
-#        return IngredientRecipeListSerializer(ingredients).data
-
-#    def _add_recipe_ingredients(self, ingredients, recipe):
-#        IngredientList.objects.bulk_create(
-#            [IngredientList(
-#                IngredientRecipe=ingredient['ingredients'],
-#                recipe=recipe,
-#                amount=ingredients['amount']
-#           ) for ingredient in ingredients]
-#       )
-
     def add_ingredients(self, ingredients, recipe):
         IngredientList.objects.bulk_create(
             [

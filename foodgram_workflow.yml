@@ -62,7 +62,7 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
-            sudo docker-compose sto
+            sudo docker-compose stop
             sudo docker compose down -v
             sudo docker-compose rmi motheranarkia/foodgram_backend
             touch .env
