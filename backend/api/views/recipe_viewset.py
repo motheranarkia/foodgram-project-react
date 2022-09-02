@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from api.filters import RecipeFilter
@@ -31,7 +31,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeListSerializer
     filter_backends = [DjangoFilterBackend]
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
     filter_class = RecipeFilter
     http_method_names = ['get', 'post', 'patch', 'delete']
 
