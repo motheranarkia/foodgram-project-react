@@ -11,7 +11,7 @@ from .ingredient_serializers import (
 from .tag_serializer import TagSerializer
 from .user_serializers import UserSerializer
 
-REQUIRED_FIELDS_PECIPE = (
+REQUIRED_FIELDS_RECIPE = (
     'ingredients', 'tags',
     'name', 'text', 'cooking_time', 'author', 'image'
 )
@@ -31,7 +31,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = REQUIRED_FIELDS_PECIPE + (
+        fields = REQUIRED_FIELDS_RECIPE + (
             'id', 'is_favorited', 'is_in_shopping_cart'
         )
 
@@ -65,7 +65,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = REQUIRED_FIELDS_PECIPE + ('id',)
+        fields = REQUIRED_FIELDS_RECIPE + ('id',)
 
     def validate_ingredients(self, data):
         ingredients = self.initial_data.get('ingredients')
@@ -142,16 +142,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         self.create_tags(tags, instance)
         return super().update(instance, validated_data)
 
-
-#        ingredients = validated_data.pop('ingredients')
-#       tags = validated_data.pop('tags')
-#        IngredientList.objects.filter(recipe=recipe).delete()
-#        self.create_ingredients(ingredients, recipe)
-#        recipe.tags.set(tags)
-#        return super().update(recipe, validated_data)
-#
-#    def to_representation(self, recipe):
-#        data = RecipeListSerializer(
-#            recipe,
-#            context={'request': self.context.get('request')}).data
-#       return data
+    def to_representation(self, recipe):
+        data = RecipeListSerializer(
+            recipe,
+            context={'request': self.context.get('request')}).data
+        return data
