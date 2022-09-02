@@ -11,11 +11,6 @@ REQUIRED_FIELDS_INGRD = (
 
 class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор ингредиента."""
-
-    name = serializers.CharField()
-    measurement_unit = serializers.CharField()
-    id = serializers.IntegerField()
-
     class Meta:
         model = Ingredient
         fields = REQUIRED_FIELDS_INGRD
@@ -24,9 +19,9 @@ class IngredientSerializer(serializers.ModelSerializer):
 class IngredientRecipeListSerializer(serializers.ModelSerializer):
     """Сериализатор ингредиента для RecipeListSerializer."""
 
-    id = serializers.IntegerField(source='ingredient.id')
-    name = serializers.CharField(source='ingredient.name')
-    measurement_unit = serializers.CharField(
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
 
@@ -36,12 +31,16 @@ class IngredientRecipeListSerializer(serializers.ModelSerializer):
 
 
 class IngredientRecipeCreateSerializer(serializers.ModelSerializer):
-    amount = serializers.IntegerField(write_only=True)
-    id = serializers.IntegerField(write_only=True)
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    # amount = serializers.IntegerField()
 
     class Meta:
-        model = Ingredient
-        fields = [
-            'id',
-            'amount'
-        ]
+        model = IngredientList
+        fields = ('id', 'amount')
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError(
+                'Количество ингредиента должно быть больше 0!'
+            )
+        return value

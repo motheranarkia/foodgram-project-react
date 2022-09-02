@@ -99,18 +99,22 @@ class IngredientList(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
         default=0,
-        validators=(
+        validators=[
             MinValueValidator(
-                1, message='Выберите хотя бы 1 ингредиент.'),
-        )
+                1, message={'amount': 'Выберите хотя бы 1 ингредиент.'}),
+        ]
     )
 
     class Meta:
+        ordering = ['-id']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['ingredient', 'recipe'],
+                name='unique_ingredients_in_recipe'
+            )
+        ]
         verbose_name = 'Количество ингредиента'
         verbose_name_plural = 'Количество ингредиентов'
-
-    def __str__(self) -> str:
-        return f'{self.amount} {self.ingredient}'
 
 
 class Favorite(models.Model):
