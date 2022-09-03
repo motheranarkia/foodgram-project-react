@@ -3,8 +3,8 @@ import csv
 from django.db.models import Sum
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, viewsets, filters
+# from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -30,7 +30,6 @@ RECIPE_DELETED_FROM_FAVOR = 'Рецепт успешно удален из из�
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeListSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     permission_classes = (AllowAny,)
     filter_class = RecipeFilter
     search_fields = (
