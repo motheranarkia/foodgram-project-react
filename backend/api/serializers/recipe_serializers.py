@@ -151,7 +151,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
         instance.ingredients.clear()
         ingredients = validated_data.pop('ingredients')
-        self.create_ingredients(ingredients, instance)
+        self.add_ingredients(ingredients, instance)
         instance.tags.clear()
         tags = validated_data.pop('tags')
         self.add_tags(tags, instance)
