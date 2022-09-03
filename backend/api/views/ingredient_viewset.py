@@ -15,3 +15,5 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
     filter_backends = [DjangoFilterBackend]
     filter_class = IngredientFilter
+
+# 5
