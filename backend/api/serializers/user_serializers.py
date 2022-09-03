@@ -24,10 +24,6 @@ class UserSerializer(UserSerializer):
     """Сериализатор пользователей."""
     is_subscribed = SerializerMethodField()
 
-    class Meta:
-        model = User
-        fields = REQUIRED_FIELDS_USER + ('is_subscribed',)
-
     def get_is_subscribed(self, obj):
         user = self.context['request'].user
         if user.is_anonymous:
@@ -36,3 +32,7 @@ class UserSerializer(UserSerializer):
             user=user,
             author=obj
         ).exists()
+
+    class Meta:
+        model = User
+        fields = REQUIRED_FIELDS_USER + ('is_subscribed',)
