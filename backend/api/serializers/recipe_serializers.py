@@ -24,7 +24,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     ingredients = IngredientRecipeListSerializer(
         many=True,
-        # source='ingredient_recipe',
+        source='ingredientrecipe_set',
         read_only=True
     )
     is_favorited = serializers.SerializerMethodField(read_only=True)
