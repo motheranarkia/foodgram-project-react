@@ -45,7 +45,7 @@ class FollowListSerializer(serializers.ModelSerializer):
             queryset, many=True).data
 
 
-class SubscribeSerializer(serializers.ModelSerializer):
+class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = ('user', 'author')

@@ -5,7 +5,9 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.serializers.follow_serializers import FollowListSerializer
+from api.serializers.follow_serializers import (
+    FollowListSerializer, FollowSerializer
+)
 from api.serializers.user_serializers import UserSerializer
 from users.models import Follow, User
 
@@ -24,15 +26,25 @@ class UserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated, )
     )
     def subscriptions(self, request):
-        user = request.user
-        queryset = User.objects.filter(follower__user=user)
+        user = get_object_or_404(
+            User,
+            id=request.user.id
+        )
+        queryset = User.objects.filter(following__user=user)
         pages = self.paginate_queryset(queryset)
+        if pages is not None:
+            serializer = FollowListSerializer(
+                pages,
+                many=True,
+                context={'request': request}
+            )
+            return self.get_paginated_response(serializer.data)
         serializer = FollowListSerializer(
-            pages,
+            queryset,
             many=True,
             context={'request': request}
         )
-        return self.get_paginated_response(serializer.data)
+        return Response(serializer.data)
 
     @action(
         methods=['POST', 'DELETE'],
@@ -40,26 +52,19 @@ class UserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated, )
     )
     def subscribe(self, request, id):
-        user = self.request.user
-        author = get_object_or_404(User, id=id)
-        subscribe = Follow.objects.filter(user=user, author=author)
+        user = request.user
         if request.method == 'POST':
-            if subscribe.exists():
-                data = {
-                    'errors': ERROR_SUBSCRIPTION_ALREADY_EXISTS}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            Follow.objects.create(user=user, author=author)
-            serializer = FollowListSerializer(
-                author,
+            data = {'user': user.id, 'author': id}
+            serializer = FollowSerializer(
+                data=data,
                 context={'request': request}
             )
-            return Response(
-                serializer.data,
-                status=status.HTTP_201_CREATED
-            )
-        if request.method == 'DELETE':
-            if not subscribe.exists():
-                data = {'errors': ERROR_SUBSCRIBING_NOT_EXIST}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            subscribe.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        following = get_object_or_404(User, id=id)
+        follow = get_object_or_404(
+            Follow, user=user, author=following
+        )
+        follow.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
