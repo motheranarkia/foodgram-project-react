@@ -33,7 +33,7 @@ RECIPE_DELETED_FROM_FAVOR = 'Рецепт успешно удален из из�
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    # serializer_class = RecipeListSerializer
+    serializer_class = RecipeListSerializer
     permission_classes = [IsAuthorOrAdminOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
