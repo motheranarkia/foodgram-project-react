@@ -59,11 +59,11 @@ class RecipeListSerializer(serializers.ModelSerializer):
             shopping_cart__user=user,
             id=obj.id
         ).exists()
-        return user.shopping_carts.filter(recipe=obj).exists()
+        # return user.shopping_carts.filter(recipe=obj).exists()
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    author = UserSerializer()
+    author = UserSerializer(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
@@ -101,29 +101,29 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             tags_list.append(tag)
         return data
 
-    def add_ingredients(self, ingredients, recipe):
-        IngredientList.objects.bulk_create(
-            [
-                IngredientList(
-                    ingredient_id=ingredient.get('id'),
-                    recipe=recipe,
-                    amount=ingredient['amount']
-                )
-                for ingredient in ingredients
-            ]
-        )
-
     # def add_ingredients(self, ingredients, recipe):
     #     IngredientList.objects.bulk_create(
     #         [
     #             IngredientList(
+    #                 ingredient_id=ingredient.get('id'),
     #                 recipe=recipe,
-    #                 ingredient=ingredient['id'],
     #                 amount=ingredient['amount']
     #             )
     #             for ingredient in ingredients
     #         ]
     #     )
+
+    def add_ingredients(self, ingredients, recipe):
+        IngredientList.objects.bulk_create(
+            [
+                IngredientList(
+                    recipe=recipe,
+                    ingredient=ingredient['id'],
+                    amount=ingredient['amount']
+                )
+                for ingredient in ingredients
+            ]
+        )
 
     def add_tags(self, tags, recipe):
         recipe.tags.set(tags)
