@@ -19,11 +19,11 @@ from api.filters import RecipeFilter
 from api.serializers.recipe_serializers import (
     RecipeCreateSerializer,
     RecipeListSerializer,
-    RecipeToRepresentationSerializer
+    RepresentationSerializer
 )
 from api.serializers.shoppingcart_serializers import (
     ShoppingCartSerializer, ShoppingCartValidateSerializer)
-from api.permissions import IsAuthorOrAdminOrReadOnly
+# from api.permissions import IsAuthorOrAdminOrReadOnly
 from recipes.models import Favorite, IngredientList, Recipe, ShoppingCart
 
 
@@ -34,7 +34,7 @@ RECIPE_DELETED_FROM_FAVOR = 'Рецепт успешно удален из из�
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeListSerializer
-    permission_classes = [IsAuthorOrAdminOrReadOnly]
+    # permission_classes = [IsAuthorOrAdminOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
@@ -109,7 +109,7 @@ def post_delete_favorite_shopping_cart(user, method, model, id):
     recipe = get_object_or_404(Recipe, id=id)
     if method == 'POST':
         model.objects.create(user=user, recipe=recipe)
-        serializer = RecipeToRepresentationSerializer(recipe)
+        serializer = RepresentationSerializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     obj = get_object_or_404(model, user=user, recipe=recipe)
     obj.delete()

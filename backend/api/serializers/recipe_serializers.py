@@ -58,7 +58,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
+    author = UserSerializer()
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
@@ -108,7 +108,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     #         ]
     #     )
 
-    def create_ingredients(self, ingredients, recipe):
+    def add_ingredients(self, ingredients, recipe):
         IngredientList.objects.bulk_create(
             [
                 IngredientList(
@@ -120,7 +120,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             ]
         )
 
-    def create_tags(self, tags, recipe):
+    def add_tags(self, tags, recipe):
         recipe.tags.set(tags)
 
     def create(self, validated_data):
@@ -131,7 +131,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             author=author,
             **validated_data
         )
-        self.create_tags(tags, recipe)
+        self.add_tags(tags, recipe)
         self.add_ingredients(ingredients_data, recipe)
         recipe.save()
         return recipe
@@ -149,7 +149,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         self.create_ingredients(ingredients, instance)
         instance.tags.clear()
         tags = validated_data.pop('tags')
-        self.create_tags(tags, instance)
+        self.add_tags(tags, instance)
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
@@ -158,7 +158,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return RecipeListSerializer(instance, context=context).data
 
 
-class RecipeToRepresentationSerializer(serializers.ModelSerializer):
+class RepresentationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
