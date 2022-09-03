@@ -1,9 +1,17 @@
-from django_filters import rest_framework as filters
+from django_filters.rest_framework import FilterSet, filters
 
 from recipes.models import Recipe, Tag, Ingredient
 
 
-class RecipeFilter(filters.FilterSet):
+class IngredientFilter(FilterSet):
+    name = filters.CharFilter(lookup_expr='startswith')
+
+    class Meta:
+        model = Ingredient
+        fields = {'name', 'measurement_unit'}
+
+
+class RecipeFilter(FilterSet):
     """Фильтр для сортировки рецептов."""
     tags = filters.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
@@ -36,14 +44,3 @@ class RecipeFilter(filters.FilterSet):
         fields = (
             'tags', 'author', 'is_favorited', 'is_in_shopping_cart'
         )
-
-
-class IngredientFilter(filters.FilterSet):
-    name = filters.CharFilter(
-        field_name='name',
-        lookup_expr='startswith'
-    )
-
-    class Meta:
-        model = Ingredient
-        fields = ('name',)
