@@ -82,9 +82,21 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                     'ingredients': 'Такой уже выбран'
                 })
             ingredients_list.append(ingredient_id)
+        tags = self.initial_data.get('tags')
+        if not tags:
+            raise serializers.ValidationError({
+                'tags': 'Нужно выбрать тэг!'
+            })
+        tags_list = []
+        for tag in tags:
+            if tag in tags_list:
+                raise serializers.ValidationError({
+                    'tags': 'Такой тэг уже выбран!'
+                })
+            tags_list.append(tag)
         return data
 
-    def _add_ingredients(self, ingredients, recipe):
+    def add_ingredients(self, ingredients, recipe):
         IngredientList.objects.bulk_create(
             [
                 IngredientList(
@@ -96,16 +108,19 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             ]
         )
 
+    def create_tags(self, tags, recipe):
+        recipe.tags.set(tags)
+
     def create(self, validated_data):
         author = self.context.get('request').user
-        tags_data = validated_data.pop('tags')
+        tags = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(
             author=author,
             **validated_data
         )
-        self._add_ingredients(ingredients_data, recipe)
-        recipe.tags.set(tags_data)
+        self.create_tags(tags, recipe)
+        self.add_ingredients(ingredients_data, recipe)
         recipe.save()
         return recipe
 
@@ -125,11 +140,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         self.create_tags(tags, instance)
         return super().update(instance, validated_data)
 
-    def to_representation(self, recipe):
-        data = RecipeListSerializer(
-            recipe,
-            context={'request': self.context.get('request')}).data
-        return data
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return RecipeListSerializer(instance, context=context).data
 
 
 class RecipeToRepresentationSerializer(serializers.ModelSerializer):
