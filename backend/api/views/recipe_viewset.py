@@ -9,6 +9,7 @@ from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from api.filters import RecipeFilter
 # from api.permissions import AdminOrAuthor
@@ -37,6 +38,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthorOrAdminOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+    pagination_class = PageNumberPagination
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
