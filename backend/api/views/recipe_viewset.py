@@ -24,7 +24,7 @@ from api.serializers.recipe_serializers import (
 )
 from api.serializers.shoppingcart_serializers import (
     ShoppingCartSerializer, ShoppingCartValidateSerializer)
-# from api.permissions import IsAuthorOrAdminOrReadOnly
+from api.permissions import IsAuthorOrAdminOrReadOnly
 from recipes.models import Favorite, IngredientList, Recipe, ShoppingCart
 
 
@@ -35,7 +35,7 @@ RECIPE_DELETED_FROM_FAVOR = 'Рецепт успешно удален из из�
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeListSerializer
-    # permission_classes = [IsAuthorOrAdminOrReadOnly]
+    permission_classes = [IsAuthorOrAdminOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     pagination_class = PageNumberPagination
