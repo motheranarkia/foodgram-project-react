@@ -130,3 +130,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             recipe,
             context={'request': self.context.get('request')}).data
         return data
+
+
+class RecipeToRepresentationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
