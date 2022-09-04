@@ -41,11 +41,11 @@ class RecipeListSerializer(serializers.ModelSerializer):
     #     ingredients = IngredientList.objects.filter(recipe=obj)
     #     return IngredientRecipeListSerializer(ingredients, many=True).data
 
-    # def get_user(self):
-    #     return self.context.get('request').user
+    def get_user(self):
+        return self.context.get('request').user
 
-    # def get_request(self):
-    #     return self.context.get('request')
+    def get_request(self):
+        return self.context.get('request')
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
