@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from users.models import Follow, User
-from serializers.follow_serializers import (
+from api.serializers.follow_serializers import (
     FollowSerializer, FollowListSerializer
 )
 
