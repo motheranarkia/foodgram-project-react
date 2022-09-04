@@ -3,34 +3,8 @@ from django.db import models
 from users.models import User
 
 
-class Ingredient(models.Model):
-    """
-    Формирование полей для модели Ingredient.
-    """
-
-    name = models.CharField(
-        max_length=150,
-        unique=True,
-        verbose_name='Название ингредиента'
-    )
-    measurement_unit = models.CharField(
-        max_length=10,
-        verbose_name='Единица измерения'
-    )
-
-    class Meta:
-        ordering = ['-id']
-        verbose_name = 'Ингредиент'
-        verbose_name_plural = 'Ингредиенты'
-
-    def __str__(self):
-        return f'{self.name} {self.measurement_unit}'
-
-
 class Tag(models.Model):
-    """
-    Формирование полей для модели Tag.
-    """
+    """Модель тегов рецептов пользователей."""
 
     name = models.CharField(
         max_length=10,
@@ -56,10 +30,30 @@ class Tag(models.Model):
         return f'{self.name} {self.slug}'
 
 
+class Ingredient(models.Model):
+    """Модель ингредиентов."""
+
+    name = models.CharField(
+        max_length=150,
+        unique=True,
+        verbose_name='Название ингредиента'
+    )
+    measurement_unit = models.CharField(
+        max_length=10,
+        verbose_name='Единица измерения'
+    )
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+
+    def __str__(self):
+        return f'{self.name} {self.measurement_unit}'
+
+
 class Recipe(models.Model):
-    """
-    Формирование полей для модели Recipe.
-    """
+    """Модель рецептов пользователей."""
 
     author = models.ForeignKey(
         User,
@@ -110,9 +104,7 @@ class Recipe(models.Model):
 
 
 class IngredientList(models.Model):
-    """
-    Формирование полей для модели IngredientList.
-    """
+    """Модель, описывающая количество ингредиентов в рецепте"""
 
     ingredient = models.ForeignKey(
         Ingredient,
@@ -128,7 +120,7 @@ class IngredientList(models.Model):
         verbose_name='Количество',
         validators=[
             MinValueValidator(
-                1, message={'amount': 'Количество должно быть больше 0!'}
+                1, message={'amount': 'Выберите хотя бы 1 ингредиент.'}
             )
         ]
     )
@@ -146,9 +138,7 @@ class IngredientList(models.Model):
 
 
 class Favorite(models.Model):
-    """
-    Формирование полей для модели Favorite.
-    """
+    """Модель списка избранного."""
 
     user = models.ForeignKey(
         User,
@@ -176,9 +166,7 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
-    """
-    Формирование полей для модели ShoppingCart.
-    """
+    """Модель списка покупок пользователя."""
 
     user = models.ForeignKey(
         User,
