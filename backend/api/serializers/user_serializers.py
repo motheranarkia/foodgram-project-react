@@ -1,28 +1,25 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from rest_framework.serializers import SerializerMethodField
+from rest_framework import serializers
 
 from users.models import Follow, User
 
-REQUIRED_FIELDS_USER = (
-    'id',
-    'email',
-    'username',
-    'first_name',
-    'last_name',
-)
-
 
 class UserCreateSerializer(UserCreateSerializer):
-    """Сериализатор для регистрации пользователей."""
-
     class Meta:
         model = User
-        fields = REQUIRED_FIELDS_USER + ('password',)
+        fields = ('id', 'username', 'first_name', 'last_name', 'password',
+                  'email')
 
 
 class UserSerializer(UserSerializer):
-    """Сериализатор пользователей."""
-    is_subscribed = SerializerMethodField(read_only=True)
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'id', 'username', 'email', 'first_name', 'last_name',
+            'is_subscribed',
+        )
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
@@ -32,7 +29,3 @@ class UserSerializer(UserSerializer):
             user=request.user,
             author=obj
         ).exists()
-
-    class Meta:
-        model = User
-        fields = REQUIRED_FIELDS_USER + ('is_subscribed',)

@@ -1,29 +1,25 @@
-from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
+# from recipes.pagination import CustomPagination
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.serializers.follow_serializers import (
-    FollowListSerializer, FollowSerializer
-)
-from api.serializers.user_serializers import UserSerializer
 from users.models import Follow, User
+from serializers.follow_serializers import (
+    FollowSerializer, FollowListSerializer
+)
 
-ERROR_SUBSCRIPTION_ALREADY_EXISTS = 'Вы уже подписаны на этого автора.'
-ERROR_SUBSCRIBING_NOT_EXIST = 'Вы не подписаны на этого автора.'
 
-
-class UserViewSet(UserViewSet):
-    """Вьюсет для модели пользователей."""
+class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    # pagination_class = CustomPagination
 
     @action(
         detail=False,
-        methods=['get'],
-        permission_classes=(IsAuthenticated, )
+        url_path='subscriptions',
+        permission_classes=[IsAuthenticated]
     )
     def subscriptions(self, request):
         user = get_object_or_404(
@@ -47,11 +43,12 @@ class UserViewSet(UserViewSet):
         return Response(serializer.data)
 
     @action(
-        methods=['POST', 'DELETE'],
+        methods=('post', 'delete'),
         detail=True,
-        permission_classes=(IsAuthenticated, )
+        url_path='subscribe',
+        permission_classes=[IsAuthenticated]
     )
-    def subscribe(self, request, id):
+    def subscription_actions(self, request, id):
         user = request.user
         if request.method == 'POST':
             data = {'user': user.id, 'author': id}
