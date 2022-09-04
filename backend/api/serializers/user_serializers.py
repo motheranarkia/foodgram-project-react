@@ -36,3 +36,5 @@ class UserSerializer(UserSerializer):
     class Meta:
         model = User
         fields = REQUIRED_FIELDS_USER + ('is_subscribed',)
+
+# почти рабочий вариант
