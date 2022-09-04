@@ -113,29 +113,29 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             tags_list.append(tag)
         return data
 
-    # def add_ingredients(self, ingredients, recipe):
-    #     IngredientList.objects.bulk_create(
-    #         [
-    #             IngredientList(
-    #                 ingredient_id=ingredient.get('id'),
-    #                 recipe=recipe,
-    #                 amount=ingredient['amount']
-    #             )
-    #             for ingredient in ingredients
-    #         ]
-    #     )
-
     def add_ingredients(self, ingredients, recipe):
         IngredientList.objects.bulk_create(
             [
                 IngredientList(
+                    ingredient_id=ingredient.get('id'),
                     recipe=recipe,
-                    ingredient=ingredient['id'],
                     amount=ingredient['amount']
                 )
                 for ingredient in ingredients
             ]
         )
+
+    # def add_ingredients(self, ingredients, recipe):
+    #     IngredientList.objects.bulk_create(
+    #         [
+    #             IngredientList(
+    #                 recipe=recipe,
+    #                 ingredient=ingredient['id'],
+    #                 amount=ingredient['amount']
+    #             )
+    #             for ingredient in ingredients
+    #         ]
+    #     )
 
     def add_tags(self, tags, recipe):
         recipe.tags.set(tags)
