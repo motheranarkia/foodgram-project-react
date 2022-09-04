@@ -6,7 +6,7 @@ from recipes.models import Favorite, IngredientList, Recipe, Tag
 
 from .ingredient_serializers import (
     IngredientRecipeCreateSerializer,
-    IngredientRecipeListSerializer
+    # IngredientRecipeListSerializer
 )
 from .tag_serializer import TagSerializer
 from .user_serializers import UserSerializer
@@ -32,9 +32,9 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'id', 'is_favorited', 'is_in_shopping_cart'
         )
 
-    def get_ingredients(self, obj):
-        ingredients = IngredientList.objects.filter(recipe=obj)
-        return IngredientRecipeListSerializer(ingredients, many=True).data
+    # def get_ingredients(self, obj):
+    #     ingredients = IngredientList.objects.filter(recipe=obj)
+    #     return IngredientRecipeListSerializer(ingredients, many=True).data
 
     # def get_user(self):
     #     return self.context.get('request').user
