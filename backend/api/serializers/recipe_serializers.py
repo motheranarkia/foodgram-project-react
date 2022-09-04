@@ -2,7 +2,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
-from recipes.models import Favorite, IngredientList, Recipe, Tag
+from recipes.models import IngredientList, Recipe, Tag
 
 from .ingredient_serializers import (
     IngredientRecipeCreateSerializer,
@@ -35,31 +35,47 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'id', 'is_favorited', 'is_in_shopping_cart'
         )
 
+    def get_ingredients(self, obj):
+        ingredients = IngredientList.objects.filter(recipe=obj)
+        return IngredientRecipeListSerializer(ingredients, many=True).data
+
     # def get_user(self):
     #     return self.context.get('request').user
 
     # def get_request(self):
     #     return self.context.get('request')
 
+    # def get_is_favorited(self, obj):
+    #     user = self.context['request'].user
+    #     if user.is_anonymous:
+    #         return False
+    #     return Favorite.objects.filter(
+    #         user=user,
+    #         recipe=obj
+    #     ).exists()
+    #     # return user.favorites.filter(recipe=obj).exists()
+
     def get_is_favorited(self, obj):
-        user = self.context['request'].user
+        user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Favorite.objects.filter(
-            user=user,
-            recipe=obj
-        ).exists()
-        # return user.favorites.filter(recipe=obj).exists()
+        return Recipe.objects.filter(favorites__user=user, id=obj.id).exists()
+
+    # def get_is_in_shopping_cart(self, obj):
+    #     user = self.context['request'].user
+    #     if user.is_anonymous:
+    #         return False
+    #     return Recipe.objects.filter(
+    #         shopping_cart__user=user,
+    #         id=obj.id
+    #     ).exists()
+    #     # return user.shopping_carts.filter(recipe=obj).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        user = self.context['request'].user
+        user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Recipe.objects.filter(
-            shopping_cart__user=user,
-            id=obj.id
-        ).exists()
-        # return user.shopping_carts.filter(recipe=obj).exists()
+        return Recipe.objects.filter(carts__user=user, id=obj.id).exists()
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
@@ -140,35 +156,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         self.add_ingredients(ingredients_data, recipe)
         recipe.save()
         return recipe
-
-    # def update(self, instance, validated_data):
-    #     instance.name = validated_data.pop('name', instance.name)
-    #     instance.image = validated_data.pop('image', instance.image)
-    #     instance.text = validated_data.pop('text', instance.text)
-    #     instance.cooking_time = validated_data.pop(
-    #         'cooking_time',
-    #         instance.cooking_time
-    #     )
-    #     instance.ingredients.clear()
-    #     ingredients = validated_data.pop('ingredients')
-    #     self.add_ingredients(ingredients, instance)
-    #     instance.tags.clear()
-    #     tags = validated_data.pop('tags')
-    #     self.add_tags(tags, instance)
-    #     return super().update(instance, validated_data)
-
-    # def update(self, instance, validated_data):
-    #     tags_data = validated_data.pop('tags')
-    #     ingredients_data = validated_data.pop('ingredients')
-    #     super().update(instance, validated_data)
-    #     instance.tags.clear()
-    #     instance.ingredients.clear()
-    #     for tag in tags_data:
-    #         tag_id = tag.id
-    #         tag_object = get_object_or_404(Tag, id=tag_id)
-    #         instance.tags.add(tag_object)
-    #     self._add_ingredients(instance, ingredients_data)
-    #     return instance
 
     def update(self, instance, validated_data):
         instance.tags.clear()
