@@ -25,7 +25,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     # ingredients = serializers.SerializerMethodField(read_only=True)
     ingredients = IngredientRecipeListSerializer(
         many=True,
-        source='ingredientresipelist_set',
+        source='ingredientresipe_set',
         read_only=True
     )
     is_favorited = serializers.SerializerMethodField(read_only=True)
