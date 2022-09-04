@@ -12,7 +12,7 @@ from api.serializers.follow_serializers import (
 )
 
 
-class CustomUserViewSet(UserViewSet):
+class UserViewSet(UserViewSet):
     queryset = User.objects.all()
     pagination_class = PageNumberPagination
 
