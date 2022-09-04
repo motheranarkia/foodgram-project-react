@@ -27,7 +27,7 @@ $ docker-compose exec web python manage.py loaddata fixtures.json
 DB_ENGINE=django.db.backends.postgresql
 DB_HOST=db
 DB_NAME=postgres
-DB_PASSWORD=admin
+DB_PASSWORD=postgres
 DB_PORT=5432
 DB_USER=postgres
 ```
