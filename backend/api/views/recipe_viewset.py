@@ -1,4 +1,4 @@
-import csv
+# import csv
 
 from django.db.models import Sum
 from django.http.response import HttpResponse
@@ -54,10 +54,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        ingredient_list = IngredientList.objects.filter(
-            recipe__shopping_cart__user=request.user
-        )
-        return list_formation(ingredient_list)
+        user = request.user
+        ingredients = IngredientList.objects.filter(
+            recipe__shopping_carts__user=user
+        ).order_by(
+            'ingredient__name'
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit',
+        ).annotate(sum_amount=Sum('amount'))
+        shopping_cart = recipe_formation(ingredients)
+        filename = 'shopping_cart.txt'
+        response = HttpResponse(shopping_cart, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
 
     @action(
         detail=False,
@@ -71,32 +81,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return post_delete_favorite_shopping_cart(
             request.user, request.method, ShoppingCart, id
         )
-
-    # def shopping_cart(self, request, pk): мое
-    #     current_user = request.user
-    #     recipe = get_object_or_404(Recipe, pk=pk)
-    #     serializer = ShoppingCartValidateSerializer(
-    #         data=request.data,
-    #         context={'request': request, 'recipe': recipe},
-    #     )
-    #     serializer.is_valid(raise_exception=True)
-    #     if request.method == 'POST':
-    #         ShoppingCart.objects.create(
-    #             user=current_user,
-    #             recipe=recipe
-    #         )
-    #         serializer = ShoppingCartSerializer(recipe)
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     deleted = get_object_or_404(
-    #         ShoppingCart,
-    #         user=request.user,
-    #         recipe=recipe
-    #     )
-    #     deleted.delete()
-    #     return Response(
-    #         {'message': RECIPE_DELETED_FROM_SHOP_CART},
-    #         status=status.HTTP_200_OK
-    #     )
 
     @action(
         detail=False,
@@ -123,24 +107,9 @@ def post_delete_favorite_shopping_cart(user, method, model, id):
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-def list_formation(ingredient_list):
-    ingredients = ingredient_list.values(
-        'ingredient__name',
-        'ingredient__measurement_unit'
-    ).annotate(
-        ingredient_amount=Sum('amount')
-    ).values_list(
-        'ingredient__name',
-        'ingredient_amount',
-        'ingredient__measurement_unit',
-    )
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = (
-        'attachment;'
-        'filename="Shoppingcart.csv"'
-    )
-    response.write(u'\ufeff'.encode('utf8'))
-    writer = csv.writer(response)
-    for item in list(ingredients):
-        writer.writerow(item)
-    return response
+def recipe_formation(ingredients):
+    return '\n'.join([
+        f'{ingredient["ingredient__name"]} - {ingredient["sum_amount"]}'
+        f'{ingredient["ingredient__measurement_unit"]}'
+        for ingredient in ingredients
+    ])
