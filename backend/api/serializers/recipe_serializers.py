@@ -6,8 +6,7 @@ from recipes.models import Favorite, IngredientList, Recipe, Tag
 
 from .ingredient_serializers import (
     IngredientRecipeCreateSerializer,
-    IngredientRecipeListSerializer,
-    # IngredientRecipeListSerializer
+    IngredientRecipeListSerializer
 )
 from .tag_serializer import TagSerializer
 from .user_serializers import UserSerializer
@@ -54,7 +53,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
     #     # return user.favorites.filter(recipe=obj).exists()
 
     def get_is_favorited(self, obj):
-        user = self.context.get['request'].user
+        user = self.context['request'].user
         if user.is_anonymous:
             return False
         return Favorite.objects.filter(user=user, recipe=obj).exists()
