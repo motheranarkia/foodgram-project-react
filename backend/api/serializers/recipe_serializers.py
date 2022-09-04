@@ -6,7 +6,7 @@ from recipes.models import Favorite, IngredientList, Recipe, Tag
 
 from .ingredient_serializers import (
     IngredientRecipeCreateSerializer,
-    IngredientRecipeListSerializer
+    # IngredientRecipeListSerializer
 )
 from .tag_serializer import TagSerializer
 from .user_serializers import UserSerializer
@@ -20,13 +20,14 @@ ERROR_NOT_POSITIVE_VALUE = 'Пожалуйста, введите хоть что
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True)
+    tags = TagSerializer(many=True, read_only=True)
     author = UserSerializer(read_only=True)
-    ingredients = IngredientRecipeListSerializer(
-        many=True,
-        source='ingredientlist_set',
-        read_only=True
-    )
+    ingredients = serializers.SerializerMethodField(read_only=True)
+    # ingredients = IngredientRecipeListSerializer(
+    #     many=True,
+    #     source='ingredientlist_set',
+    #     read_only=True
+    # )
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
