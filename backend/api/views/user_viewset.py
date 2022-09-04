@@ -1,5 +1,4 @@
 from djoser.views import UserViewSet
-# from recipes.pagination import CustomPagination
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -15,7 +14,6 @@ from api.serializers.follow_serializers import (
 
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
-    # pagination_class = CustomPagination
     pagination_class = PageNumberPagination
 
     @action(
