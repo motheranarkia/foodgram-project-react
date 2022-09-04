@@ -33,11 +33,9 @@ class RecipeFilter(FilterSet):
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        if value:
-            return queryset.filter(
-                shopping_carts__user=self.request.user
-            )
-        return queryset
+        if not value:
+            return queryset
+        return queryset.filter(shopping_carts__user=self.request.user)
 
     class Meta:
         model = Recipe
