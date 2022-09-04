@@ -22,7 +22,10 @@ ERROR_NOT_POSITIVE_VALUE = 'Пожалуйста, введите хоть что
 class RecipeListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = UserSerializer()
-    ingredients = IngredientRecipeListSerializer(many=True)
+    ingredients = IngredientRecipeListSerializer(
+        many=True
+        # source='ingredientrecipe_set'
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
