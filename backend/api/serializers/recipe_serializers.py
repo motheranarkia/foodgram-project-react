@@ -21,13 +21,14 @@ ERROR_NOT_POSITIVE_VALUE = 'Пожалуйста, введите хоть что
 
 class RecipeListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
-    author = UserSerializer()
+    author = UserSerializer(read_only=True)
     ingredients = IngredientRecipeListSerializer(
-        many=True
-        # source='ingredientrecipe_set'
+        many=True,
+        source='ingredientlist_set',
+        read_only=True
     )
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField(read_only=True)
+    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Recipe
