@@ -11,5 +11,5 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = IngredientSerializer
-    # pagination_class = None
+    pagination_class = None
     filterset_class = IngredientFilter
