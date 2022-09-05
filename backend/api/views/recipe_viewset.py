@@ -1,4 +1,4 @@
-# import csv
+import csv
 
 from django.db.models import Sum
 from django.http.response import HttpResponse
@@ -47,27 +47,37 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        methods=('get',),
-        url_path='download_shopping_cart',
-        url_name='download_shopping_cart',
-        pagination_class=None,
-        permission_classes=[IsAuthenticated]
+        permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
-        user = request.user
-        ingredients = IngredientList.objects.filter(
-            recipe__shopping_carts__user=user
-        ).order_by(
-            'ingredient__name'
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit',
-        ).annotate(sum_amount=Sum('amount'))
-        shopping_cart = recipe_formation(ingredients)
-        filename = 'shopping_cart.txt'
-        response = HttpResponse(shopping_cart, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename={filename}'
-        return response
+        ingredient_recipe = IngredientList.objects.filter(
+            recipe__shopping_cart__user=request.user
+        )
+        return list_information(ingredient_recipe)
+
+    # @action(
+    #     detail=False,
+    #     methods=('get',),
+    #     url_path='download_shopping_cart',
+    #     url_name='download_shopping_cart',
+    #     pagination_class=None,
+    #     permission_classes=[IsAuthenticated]
+    # )
+    # def download_shopping_cart(self, request):
+    #     user = request.user
+    #     ingredients = IngredientList.objects.filter(
+    #         recipe__shopping_carts__user=user
+    #     ).order_by(
+    #         'ingredient__name'
+    #     ).values(
+    #         'ingredient__name',
+    #         'ingredient__measurement_unit',
+    #     ).annotate(sum_amount=Sum('amount'))
+    #     shopping_cart = recipe_formation(ingredients)
+    #     filename = 'shopping_cart.txt'
+    #     response = HttpResponse(shopping_cart, content_type='text/plain')
+    #     response['Content-Disposition'] = f'attachment; filename={filename}'
+    #     return response
 
     @action(
         detail=False,
@@ -113,3 +123,20 @@ def recipe_formation(ingredients):
         f'{ingredient["ingredient__measurement_unit"]}'
         for ingredient in ingredients
     ])
+
+
+def list_information(ingredient_list):
+    ingredients = ingredient_list.values(
+        'ingredient__name', 'ingredient__measurement_unit'
+    ).annotate(ingredient_amount=Sum('amount')).values_list(
+        'ingredient__name', 'ingredient_amount',
+        'ingredient__measurement_unit',
+    )
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = ('attachment;'
+                                       'filename="Shoppingcart.csv"')
+    response.write(u'\ufeff'.encode('utf8'))
+    writer = csv.writer(response)
+    for item in list(ingredients):
+        writer.writerow(item)
+    return response
