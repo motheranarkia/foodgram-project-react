@@ -22,12 +22,12 @@ ERROR_NOT_POSITIVE_VALUE = 'Пожалуйста, введите хоть что
 class RecipeListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     author = UserSerializer(read_only=True)
-    # ingredients = serializers.SerializerMethodField(read_only=True)
-    ingredients = IngredientRecipeListSerializer(
-        many=True,
-        source='ingredientresipe_set',
-        read_only=True
-    )
+    ingredients = serializers.SerializerMethodField(read_only=True)
+    # ingredients = IngredientRecipeListSerializer(
+    #     many=True,
+    #     source='ingredientresipe_set',
+    #     read_only=True
+    # )
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
@@ -36,6 +36,10 @@ class RecipeListSerializer(serializers.ModelSerializer):
         fields = REQUIRED_FIELDS_RECIPE + (
             'id', 'is_favorited', 'is_in_shopping_cart'
         )
+
+    def get_ingredients(self, obj):
+        ingredients = IngredientList.objects.filter(recipe=obj)
+        return IngredientRecipeListSerializer(ingredients, many=True).data
 
     def get_user(self):
         return self.context.get('request').user
@@ -153,21 +157,21 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         recipe.save()
         return recipe
 
-    def update(self, instance, validated_data):
-        instance.name = validated_data.pop('name', instance.name)
-        instance.image = validated_data.pop('image', instance.image)
-        instance.text = validated_data.pop('text', instance.text)
-        instance.cooking_time = validated_data.pop(
-            'cooking_time',
-            instance.cooking_time
-        )
-        instance.ingredients.clear()
-        ingredients = validated_data.pop('ingredients')
-        self.add_ingredients(ingredients, instance)
-        instance.tags.clear()
-        tags = validated_data.pop('tags')
-        self.add_tags(tags, instance)
-        return super().update(instance, validated_data)
+    # def update(self, instance, validated_data):
+    #     instance.name = validated_data.pop('name', instance.name)
+    #     instance.image = validated_data.pop('image', instance.image)
+    #     instance.text = validated_data.pop('text', instance.text)
+    #     instance.cooking_time = validated_data.pop(
+    #         'cooking_time',
+    #         instance.cooking_time
+    #     )
+    #     instance.ingredients.clear()
+    #     ingredients = validated_data.pop('ingredients')
+    #     self.add_ingredients(ingredients, instance)
+    #     instance.tags.clear()
+    #     tags = validated_data.pop('tags')
+    #     self.add_tags(tags, instance)
+    #     return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         request = self.context.get('request')
