@@ -14,7 +14,7 @@ class Tag(models.Model):
     color = models.CharField(
         max_length=7,
         unique=True,
-        verbose_name='Цветовой HEX код'
+        verbose_name='Цвет'
     )
     slug = models.SlugField(
         max_length=10,

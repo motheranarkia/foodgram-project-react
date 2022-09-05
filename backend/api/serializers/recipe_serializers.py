@@ -16,7 +16,6 @@ REQUIRED_FIELDS_RECIPE = (
     'name', 'text', 'cooking_time', 'author', 'image'
 )
 ERROR_MISSING_INGREDIENT = 'Пожалуйста, выберите хотя бы один ингредиент'
-ERROR_NOT_POSITIVE_VALUE = 'Пожалуйста, введите хоть что-нибудь'
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
@@ -46,22 +45,6 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
     def get_request(self):
         return self.context.get('request')
-
-    # def get_is_favorited(self, obj):
-    #     user = self.context['request'].user
-    #     if user.is_anonymous:
-    #         return False
-    #     return Favorite.objects.filter(
-    #         user=user,
-    #         recipe=obj
-    #     ).exists()
-
-    # def get_is_in_shopping_cart(self, obj):
-    #     request = self.get_request()
-    #     user = self.get_user()
-    #     if not request or request.user.is_anonymous:
-    #         return False
-    #     return user.shopping_carts.filter(recipe=obj).exists()
 
     def get_is_favorited(self, obj):
         request = self.get_request()
@@ -117,23 +100,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             tags_list.append(tag)
         return data
 
-    # def add_ingredients(self, ingredients, recipe):
-    #     IngredientList.objects.bulk_create(
-    #         [
-    #             IngredientList(
-    #                 ingredient_id=ingredient.get('id'),
-    #                 recipe=recipe,
-    #                 amount=ingredient['amount']
-    #             )
-    #             for ingredient in ingredients
-    #         ]
-    #     )
-
     def add_ingredients(self, ingredients, recipe):
         IngredientList.objects.bulk_create(
             [
                 IngredientList(
                     recipe=recipe,
+                    # ingredient_id=ingredient.get('id'),
                     ingredient=ingredient['id'],
                     amount=ingredient['amount']
                 )
