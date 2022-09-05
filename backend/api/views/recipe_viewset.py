@@ -12,18 +12,13 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
 from api.filters import RecipeFilter
-# from api.permissions import AdminOrAuthor
-# from api.serializers.favorite_serializer import (
-#     FavoriteListSerializer,
-#     FavoriteSerializer
-# )
+from api.serializers.favorite_serializers import FavoriteSerializer
 from api.serializers.recipe_serializers import (
     RecipeCreateSerializer,
     RecipeListSerializer,
     RepresentationSerializer
 )
-# from api.serializers.shoppingcart_serializers import (
-#     ShoppingCartSerializer, ShoppingCartValidateSerializer)
+from api.serializers.shoppingcart_serializers import ShoppingCartSerializer
 from api.permissions import IsAuthorOrAdminOrReadOnly
 from recipes.models import Favorite, IngredientList, Recipe, ShoppingCart
 
@@ -45,9 +40,30 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeListSerializer
         return RecipeCreateSerializer
 
+    def get_list(self, request, list_model, pk=None):
+        user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+        in_list = list_model.objects.filter(user=user, recipe=recipe)
+        if request.method == 'POST':
+            if not in_list:
+                list_objects = list_model.objects.create(user=user,
+                                                         recipe=recipe)
+                if isinstance(list_model, Favorite):
+                    serializer = FavoriteSerializer(list_objects.recipe)
+                else:
+                    serializer = ShoppingCartSerializer(list_objects.recipe)
+                return Response(data=serializer.data,
+                                status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE':
+            if not in_list:
+                data = {'errors': 'Этого рецепта нет в списке.'}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            in_list.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
     @action(
         detail=False,
-        methods=('get',),
+        methods=('GET',),
         url_path='download_shopping_cart',
         url_name='download_shopping_cart',
         pagination_class=None,
@@ -60,30 +76,46 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return list_information(ingredient_list)
 
     @action(
-        detail=False,
-        methods=('post', 'delete'),
-        url_path=r'(?P<id>[\d]+)/shopping_cart',
-        url_name='shopping_cart',
-        pagination_class=None,
-        permission_classes=[IsAuthenticated]
+        methods=['DELETE', 'POST'],
+        detail=True,
+        permission_classes=(IsAuthenticated,)
     )
-    def shopping_cart(self, request, id):
-        return post_delete_favorite_shopping_cart(
-            request.user, request.method, ShoppingCart, id
-        )
+    def shopping_cart(self, request, pk=None):
+        return self.get_list(request=request, list_model=ShoppingCart, pk=pk)
+
+    # @action(
+    #     detail=False,
+    #     methods=('POST', 'DELETE'),
+    #     url_path=r'(?P<id>[\d]+)/shopping_cart',
+    #     url_name='shopping_cart',
+    #     pagination_class=None,
+    #     permission_classes=[IsAuthenticated]
+    # )
+    # def shopping_cart(self, request, id):
+    #     return post_delete_favorite_shopping_cart(
+    #         request.user, request.method, ShoppingCart, id
+    #     )
+
+    # @action(
+    #     detail=False,
+    #     methods=('post', 'delete'),
+    #     url_path=r'(?P<id>[\d]+)/favorite',
+    #     url_name='favorite',
+    #     pagination_class=None,
+    #     permission_classes=[IsAuthenticated]
+    # )
+    # def favorite(self, request, id):
+    #     return post_delete_favorite_shopping_cart(
+    #         request.user, request.method, Favorite, id
+    #     )
 
     @action(
-        detail=False,
-        methods=('post', 'delete'),
-        url_path=r'(?P<id>[\d]+)/favorite',
-        url_name='favorite',
-        pagination_class=None,
-        permission_classes=[IsAuthenticated]
+        methods=['DELETE', 'POST'],
+        detail=True,
+        permission_classes=(IsAuthenticated,)
     )
-    def favorite(self, request, id):
-        return post_delete_favorite_shopping_cart(
-            request.user, request.method, Favorite, id
-        )
+    def favorite(self, request, pk=None):
+        return self.get_list(request=request, list_model=Favorite, pk=pk)
 
 
 def post_delete_favorite_shopping_cart(user, method, model, id):
@@ -95,14 +127,6 @@ def post_delete_favorite_shopping_cart(user, method, model, id):
     obj = get_object_or_404(model, user=user, recipe=recipe)
     obj.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-def recipe_formation(ingredients):
-    return '\n'.join([
-        f'{ingredient["ingredient__name"]} - {ingredient["sum_amount"]}'
-        f'{ingredient["ingredient__measurement_unit"]}'
-        for ingredient in ingredients
-    ])
 
 
 def list_information(ingredient_list):
