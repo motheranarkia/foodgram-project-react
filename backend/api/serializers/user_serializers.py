@@ -3,12 +3,15 @@ from rest_framework import serializers
 
 from users.models import Follow, User
 
+REQUIRED_FIELDS_USER = (
+    'id', 'username', 'first_name', 'last_name', 'email'
+)
+
 
 class UserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'password',
-                  'email')
+        fields = REQUIRED_FIELDS_USER + ('password',)
 
 
 class UserSerializer(UserSerializer):
@@ -16,10 +19,7 @@ class UserSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = (
-            'id', 'username', 'email', 'first_name', 'last_name',
-            'is_subscribed',
-        )
+        fields = REQUIRED_FIELDS_USER + ('is_subscribed',)
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
