@@ -145,13 +145,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         self.add_tags(tags, instance)
         return super().update(instance, validated_data)
 
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        context = {'request': request}
-        return RecipeListSerializer(instance, context=context).data
+#     def to_representation(self, instance):
+#         request = self.context.get('request')
+#         context = {'request': request}
+#         return RecipeListSerializer(instance, context=context).data
 
 
-class RepresentationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
+# class RepresentationSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Recipe
+#         fields = ('id', 'name', 'image', 'cooking_time')

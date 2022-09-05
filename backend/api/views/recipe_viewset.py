@@ -15,16 +15,13 @@ from api.filters import RecipeFilter
 from api.serializers.favorite_serializers import FavoriteSerializer
 from api.serializers.recipe_serializers import (
     RecipeCreateSerializer,
-    RecipeListSerializer,
-    RepresentationSerializer
+    RecipeListSerializer
 )
 from api.serializers.shoppingcart_serializers import ShoppingCartSerializer
 from api.permissions import IsAuthorOrAdminOrReadOnly
 from recipes.models import Favorite, IngredientList, Recipe, ShoppingCart
 
-
-RECIPE_DELETED_FROM_SHOP_CART = 'Рецепт успешно удален из списка покупок'
-RECIPE_DELETED_FROM_FAVOR = 'Рецепт успешно удален из избранного'
+ERROR_RESIPE_NOT_LIST = 'Этого рецепта нет в списке.'
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -46,17 +43,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
         in_list = list_model.objects.filter(user=user, recipe=recipe)
         if request.method == 'POST':
             if not in_list:
-                list_objects = list_model.objects.create(user=user,
-                                                         recipe=recipe)
+                list_objects = list_model.objects.create(
+                    user=user,
+                    recipe=recipe
+                )
                 if isinstance(list_model, Favorite):
                     serializer = FavoriteSerializer(list_objects.recipe)
                 else:
                     serializer = ShoppingCartSerializer(list_objects.recipe)
-                return Response(data=serializer.data,
-                                status=status.HTTP_201_CREATED)
+                return Response(
+                    data=serializer.data,
+                    status=status.HTTP_201_CREATED
+                )
         if request.method == 'DELETE':
             if not in_list:
-                data = {'errors': 'Этого рецепта нет в списке.'}
+                data = {'errors': ERROR_RESIPE_NOT_LIST}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             in_list.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -64,8 +65,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=('GET',),
-        url_path='download_shopping_cart',
-        url_name='download_shopping_cart',
         pagination_class=None,
         permission_classes=(IsAuthenticated,)
     )
@@ -83,32 +82,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         return self.get_list(request=request, list_model=ShoppingCart, pk=pk)
 
-    # @action(
-    #     detail=False,
-    #     methods=('POST', 'DELETE'),
-    #     url_path=r'(?P<id>[\d]+)/shopping_cart',
-    #     url_name='shopping_cart',
-    #     pagination_class=None,
-    #     permission_classes=[IsAuthenticated]
-    # )
-    # def shopping_cart(self, request, id):
-    #     return post_delete_favorite_shopping_cart(
-    #         request.user, request.method, ShoppingCart, id
-    #     )
-
-    # @action(
-    #     detail=False,
-    #     methods=('post', 'delete'),
-    #     url_path=r'(?P<id>[\d]+)/favorite',
-    #     url_name='favorite',
-    #     pagination_class=None,
-    #     permission_classes=[IsAuthenticated]
-    # )
-    # def favorite(self, request, id):
-    #     return post_delete_favorite_shopping_cart(
-    #         request.user, request.method, Favorite, id
-    #     )
-
     @action(
         methods=['DELETE', 'POST'],
         detail=True,
@@ -116,17 +89,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk=None):
         return self.get_list(request=request, list_model=Favorite, pk=pk)
-
-
-def post_delete_favorite_shopping_cart(user, method, model, id):
-    recipe = get_object_or_404(Recipe, id=id)
-    if method == 'POST':
-        model.objects.create(user=user, recipe=recipe)
-        serializer = RepresentationSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    obj = get_object_or_404(model, user=user, recipe=recipe)
-    obj.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 def list_information(ingredient_list):
