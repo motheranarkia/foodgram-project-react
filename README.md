@@ -1,5 +1,7 @@
 # Foodgram - сервис для публикации рецептов
 
+## Server 51.250.97.13
+
 ## Технологии
 * Django
 * PostgresSql
