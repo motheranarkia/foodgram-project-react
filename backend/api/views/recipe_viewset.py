@@ -62,30 +62,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             in_list.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-    # @action(
-    #     detail=False,
-    #     methods=('get',),
-    #     url_path='download_shopping_cart',
-    #     url_name='download_shopping_cart',
-    #     pagination_class=None,
-    #     permission_classes=[IsAuthenticated]
-    # )
-    # def download_shopping_cart(self, request):
-    #     user = request.user
-    #     ingredients = IngredientList.objects.filter(
-    #         recipe__shopping_carts__user=user
-    #     ).order_by(
-    #         'ingredient__name'
-    #     ).values(
-    #         'ingredient__name',
-    #         'ingredient__measurement_unit',
-    #     ).annotate(sum_amount=Sum('amount'))
-    #     shopping_cart = recipe_formation(ingredients)
-    #     filename = 'shopping_cart.txt'
-    #     response = HttpResponse(shopping_cart, content_type='text/plain')
-    #     response['Content-Disposition'] = f'attachment; filename={filename}'
-    #     return response
-
     @action(
         detail=False,
         permission_classes=(IsAuthenticated,)
@@ -134,10 +110,3 @@ def list_information(ingredient_list):
     for item in list(ingredients):
         writer.writerow(item)
     return response
-
-# def recipe_formation(ingredients):
-#     return '\n'.join([
-#         f'{ingredient["ingredient__name"]} - {ingredient["sum_amount"]}'
-#         f'{ingredient["ingredient__measurement_unit"]}'
-#         for ingredient in ingredients
-#     ])
